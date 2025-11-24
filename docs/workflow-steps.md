@@ -113,12 +113,113 @@ Nakoniec som mu povedal aby dal review na zmeny a pushol ich. Toto sa bude asi o
 ```
 
 ---
+### Prompt #3: Login
+
+**Nástroj:** Claude Code
+**Kontext:** Login
+
+**Prompt:**
+```
+let's create first web api method - Login. Add new controler for this method, which accepts request body containing email and password. This method will return JWT token. Set 10 minutes expiration for the token.
+Method will check into Users db for user with matching email and check if the passwords match. If not, return bad request. Use login best practices for this, so that it is implemented correctly and securely.
+After you are finished, add unit tests. Use tests/CoderamaOpsAt.UnitTests project. Create unit test file or files in same folder structure as is the file which is being tested. If file is from coderamaopsai.api
+then start in Api folder.
+```
+
+**Výsledok:**
+⭐⭐⭐ OK, potreboval viac úprav
+
+
+**Čo som musel upraviť / opraviť:**
+```
+Pri tvorbe Login metódy v controlleri mi dával repetitívne try-catch, ale to nemal odkial vedieť že to chcem v samostatnom middleware pre všetky endpointy. Taktiež dva krát generoval expiration date - raz pri generovani tokenu a druhy krat pre response.
+Prompt na opravu:
+
+first of all handle general Exeption catch in middleware, which will be common for every controller method. I don't want th try catch(Exception e) {} to be everywhere. and same for validation of ModelState.
+Another thing. I don't like how you handle expiration date. You request it firstly in GenerateToken method and then again in Login method. Although its right after, those are not same dates. Consider other
+solution.
+```
+```
+Ešte som mu ďalším promptom upravil, aby používal CancellationToken pri async metódach. A nech mi vysvetlí konkrétnu implementáciu.
+
+one more thing, consider adding CancellationToken to all async methods which require it - FirstOrDefaultAsync in this case. also can you explain to me how does the BCrypt method work? it just compares plain
+passwords or is there some encryption with some key? where does it get the key from?
+
+```
+```
+Pri testoch spravil inicializáciu mcoked db v konštruktore a implementoval aj Dispose() metódu. V princípe dobre, ale nerád by som to všade opakoval tak som mu povedal nech spraví base class pre testy
+
+Tests look fine, but can you make the mocked in memory db implementation common for every future tests? I can also see the Dispose() method, so maybe some base class with initialization of db and also disposing
+of it? Afterwards every test class can use it.
+```
+```
+Spýtal som sa Clauda či moje zmeny su ok a môžu byť pushnuté na remote, keďže som videl že Claude mi hodil jwt key do appsettingov. Bolo treba mu povedať aby to dal do development appsettingov a ignoroval v gite. Najskôr chcel kľúč len vymazať po mojej otázke, tak som ho doplnil.
+
+please do this change, but also keep the key somewhere for my local development... maybe appsettings.development.json and ignore it in git?
+```
+
+
+**Poznámky / Learnings:**
+```
+Claude mi navrhol posielať ako response z Loginu aj ExpiredAt field. Doteraz som sa stretol len s verziou, že to je súčasť čisto len JWT tokenu.
+```
+
+### Prompt #4: Testing data pre login
+
+**Nástroj:** Claude Code
+**Kontext:** data pre login
+
+**Prompt:**
+```
+can you add 2 testing users to the database? also to the migration file. I guess we also have to remove the existing one from DB and migration because he does not have hashed password. don't forget to add those 2 new ones with correctly hashed password
+according to the controller method which uses BCrypt library
+```
+
+**Výsledok:**
+[ ] ✅ Fungoval perfektne (first try)
+
+**Čo som musel upraviť / opraviť:**
+```
+Nič
+```
+
+**Poznámky / Learnings:**
+```
+Claude si spravil vlastny test na to aby vygeneroval správne hash stringy z konkrétnych hesiel a následne ich vložil do migrácie. Taktiež vytvoril md súbor na testovacích userov a aplikoval db zmeny na dockeri sam.
+```
+### Prompt #5: _________________________________
+
+**Nástroj:** [ Cursor / Claude Code / Copilot / ChatGPT / Iné ]
+**Kontext:** [ Setup projektu / OAuth implementácia / ... ]
+
+**Prompt:**
+```
+[Sem vlož celý text promptu - presne ako si ho zadal do AI]
+```
+
+**Výsledok:**
+[ ] ✅ Fungoval perfektne (first try)
+[ ] ⭐⭐⭐⭐ Dobré, potreboval malé úpravy
+[ ] ⭐⭐⭐ OK, potreboval viac úprav
+[ ] ⭐⭐ Slabé, musel som veľa prepísať
+[ ] ❌ Nefungoval, musel som celé prepísať
+
+**Čo som musel upraviť / opraviť:**
+```
+[Popíš čo si musel zmeniť. Ak nič, napíš "Nič, fungoval perfektne"]
+```
+
+**Poznámky / Learnings:**
+```
+[Prečo fungoval / nefungoval? Čo by si urobil inak?]
+```
+---
 
 ## 3. Problémy a Riešenia
 
 > 💡 **Tip:** Problémy sú cenné! Ukazujú ako riešiš problémy s AI.
 
-### Problém #1: _________________________________
+### Problém #0: _________________________________
 
 **Čo sa stalo:**
 ```
@@ -144,23 +245,51 @@ Nakoniec som mu povedal aby dal review na zmeny a pushol ich. Toto sa bude asi o
 
 ---
 
-### Problém #2: _________________________________
+### Problém #1: Rôzne kľúče a secrety boli v súboroch, ktoré boli ready to push
 
 **Čo sa stalo:**
 ```
+Bez toho aby sa sám spýtal alebo to vyriešil, vytváral kľúče v appsettingoch, ktoré by išli do remote repa.
 ```
 
 **Prečo:**
 ```
+Nemal som to v prompte ani v definicií.
 ```
 
 **Riešenie:**
 ```
+Len sme si to vykomunikovali a zmenili zdroj kľúčov na file, ktorý nejde do remote.
 ```
 
 **Learning:**
 ```
+Treba na to dávať pozor, zároveň to definovať.
 ```
+
+### Problém #2: Updatovanie docker filu
+
+**Čo sa stalo:**
+```
+[Detailný popis problému - čo nefungovalo? Aká bola chyba?]
+```
+
+**Prečo to vzniklo:**
+```
+[Tvoja analýza - prečo AI toto vygeneroval? Čo bolo v prompte zlé?]
+```
+
+**Ako som to vyriešil:**
+```
+[Krok za krokom - čo si urobil? Upravil prompt? Prepísal kód? Použil iný nástroj?]
+```
+
+**Čo som sa naučil:**
+```
+[Konkrétny learning pre budúcnosť - čo budeš robiť inak?]
+```
+
+**Screenshot / Kód:** [ ] Priložený
 
 ## 4. Kľúčové Poznatky
 
@@ -204,11 +333,15 @@ Nakoniec som mu povedal aby dal review na zmeny a pushol ich. Toto sa bude asi o
 
 **1.**
 ```
-[Príklad: Vždy špecifikuj verziu knižnice v prompte - "NextAuth.js v5"]
+Určite je dobré mať dopredu premyslené obľúbené knižnice a definované v Claude.md nech ich používa. - napríklad pri testoch
 ```
 
 **2.**
 ```
+Rôzne one-time settingy, ktoré sa človek naučí asi až používaním:
+- nech používa CancellationToken kde sa dá
+- middleware na general Exception handling
+- automatický ModelState handling
 ```
 
 **3.**
@@ -229,7 +362,7 @@ Nakoniec som mu povedal aby dal review na zmeny a pushol ich. Toto sa bude asi o
 
 **Tip #1:**
 ```
-[Konkrétny, actionable tip]
+čo ukončená feature - to commit alebo merge
 ```
 
 **Tip #2:**
