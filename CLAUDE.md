@@ -93,3 +93,39 @@ This is a modular .NET 8 backend with event-driven processing:
 - RabbitMQ + MassTransit (publish/subscribe messaging)
 - JWT authentication
 - xUnit + Testcontainers for testing
+
+## Coding Standards & Rules
+
+  ### Code Style
+  - Prefer composition over inheritance
+  - Use CancellationToken for async methods
+  - If possible use design patterns for common problems
+  - All entities must have audit fields (CreatedAt, UpdatedAt)
+  - Use DTOs for API contracts, never expose entities directly
+  - Feel free to add logic to controllers if it is simple, don't overcomplicate things
+  - Use IAsyncEnumerable for streaming large datasets
+  - No magic numbers (use constants/enums)
+
+  ### API Design
+  - lowercase url parts, dash syntax in multiple word (e.g. not CreateTask but create-task) - not by controller name automatically - not /api/Orders but /api/orders
+
+  ### Security
+  - Always hash passwords with BCrypt
+  - Never log sensitive data (passwords, tokens, PII)
+  - Validate all user input
+  - Never add keys, secrets to files which can be pushed to remote
+
+  ### Testing
+  - Use AAA pattern (Arrange, Act, Assert)
+  - Mock external dependencies
+  - use Given_When_Then for test method names
+  - Integration tests should use real database (via Testcontainers)
+
+  ### Error Handling
+  - Use global exception middleware (no try-catch in controllers)
+  - Return problem details for API errors
+  - Log exceptions with context
+  - If specific validation is needed - create validation service or use FluentValidation for complex validation rules
+
+  ### Database & EF Core
+  - Use .AsNoTracking() for read-only queries
