@@ -33,6 +33,7 @@ public class OrdersController : ControllerBase
         var orders = await _dbContext.Orders
             .Include(o => o.User)
             .Include(o => o.Product)
+            .OrderByDescending(o => o.UpdatedAt)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 

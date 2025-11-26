@@ -68,6 +68,7 @@ public class AuthController : ControllerBase
         {
             Token = token,
             ExpiresAt = expiresAt,
+            UserId = user.Id,
             Email = user.Email,
             Name = user.Name
         });

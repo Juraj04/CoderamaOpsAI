@@ -368,3 +368,7 @@ FodyWeavers.xsd
 # Docker environment variables with secrets
 .env
 .claude/settings.local.json
+
+# Frontend environment files
+coderama-ops-frontend/.env*
+!coderama-ops-frontend/.env.example
