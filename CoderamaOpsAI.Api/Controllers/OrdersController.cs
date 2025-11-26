@@ -1,4 +1,6 @@
 using CoderamaOpsAI.Api.Models;
+using CoderamaOpsAI.Common.Events;
+using CoderamaOpsAI.Common.Interfaces;
 using CoderamaOpsAI.Dal;
 using CoderamaOpsAI.Dal.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +16,13 @@ public class OrdersController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
     private readonly ILogger<OrdersController> _logger;
+    private readonly IEventBus _eventBus;
 
-    public OrdersController(AppDbContext dbContext, ILogger<OrdersController> logger)
+    public OrdersController(AppDbContext dbContext, ILogger<OrdersController> logger, IEventBus eventBus)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _eventBus = eventBus;
     }
 
     [HttpGet]
@@ -119,6 +123,16 @@ public class OrdersController : ControllerBase
 
         await _dbContext.Orders.AddAsync(order, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        // Publish OrderCreated event
+        await _eventBus.PublishAsync(new OrderCreatedEvent(
+            order.Id,
+            order.UserId,
+            order.ProductId,
+            order.Total
+        ), cancellationToken);
+
+        _logger.LogInformation("Order {OrderId} created and event published", order.Id);
 
         // Load navigation properties for response
         await _dbContext.Entry(order).Reference(o => o.User).LoadAsync(cancellationToken);

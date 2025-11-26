@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CoderamaOpsAI.Dal\CoderamaOpsAI.Dal.csproj" />
+    <ProjectReference Include="..\CoderamaOpsAI.Common\CoderamaOpsAI.Common.csproj" />
   </ItemGroup>
 
 </Project>

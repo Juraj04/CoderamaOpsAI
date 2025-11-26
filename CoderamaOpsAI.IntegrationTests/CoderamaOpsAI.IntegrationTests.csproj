@@ -11,7 +11,13 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Testcontainers" Version="3.10.0" />
+    <PackageReference Include="Testcontainers.PostgreSql" Version="3.10.0" />
+    <PackageReference Include="Testcontainers.RabbitMq" Version="3.10.0" />
     <PackageReference Include="xunit" Version="2.5.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
   </ItemGroup>
@@ -25,6 +31,13 @@
     <Folder Include="Common\" />
     <Folder Include="Dal\" />
     <Folder Include="Worker\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CoderamaOpsAI.Api\CoderamaOpsAI.Api.csproj" />
+    <ProjectReference Include="..\CoderamaOpsAI.Dal\CoderamaOpsAI.Dal.csproj" />
+    <ProjectReference Include="..\CoderamaOpsAI.Common\CoderamaOpsAI.Common.csproj" />
+    <ProjectReference Include="..\CoderamaOpsAI.Worker\CoderamaOpsAI.Worker.csproj" />
   </ItemGroup>
 
 </Project>

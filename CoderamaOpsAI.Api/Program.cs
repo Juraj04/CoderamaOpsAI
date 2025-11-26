@@ -1,6 +1,7 @@
 using System.Text;
 using CoderamaOpsAI.Api.Middleware;
 using CoderamaOpsAI.Api.Services;
+using CoderamaOpsAI.Common.Configuration;
 using CoderamaOpsAI.Dal;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -53,6 +54,9 @@ builder.Services.AddSwaggerGen(options =>
 // Add DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add MassTransit for event publishing (no consumers in API)
+builder.Services.AddEventBus(builder.Configuration);
 
 // Add JWT Authentication
 var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured");
@@ -109,3 +113,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Make Program class accessible for integration tests
+public partial class Program { }

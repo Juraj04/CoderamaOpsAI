@@ -1,5 +1,7 @@
 using CoderamaOpsAI.Api.Controllers;
 using CoderamaOpsAI.Api.Models;
+using CoderamaOpsAI.Common.Events;
+using CoderamaOpsAI.Common.Interfaces;
 using CoderamaOpsAI.Dal.Entities;
 using CoderamaOpsAI.UnitTests.Common;
 using FluentAssertions;
@@ -12,12 +14,14 @@ namespace CoderamaOpsAI.UnitTests.Api.Controllers;
 public class OrdersControllerTests : DatabaseTestBase
 {
     private readonly ILogger<OrdersController> _logger;
+    private readonly IEventBus _eventBus;
     private readonly OrdersController _controller;
 
     public OrdersControllerTests()
     {
         _logger = Substitute.For<ILogger<OrdersController>>();
-        _controller = new OrdersController(DbContext, _logger);
+        _eventBus = Substitute.For<IEventBus>();
+        _controller = new OrdersController(DbContext, _logger, _eventBus);
     }
 
     private async Task<(User user, Product product)> SeedUserAndProduct()
@@ -216,6 +220,16 @@ public class OrdersControllerTests : DatabaseTestBase
         response.Should().NotBeNull();
         response!.Quantity.Should().Be(2);
         response.Price.Should().Be(50.0m);
+
+        // Verify event was published
+        await _eventBus.Received(1).PublishAsync(
+            Arg.Is<OrderCreatedEvent>(e =>
+                e.OrderId == response.Id &&
+                e.UserId == user.Id &&
+                e.ProductId == product.Id &&
+                e.Total == 100.0m),
+            Arg.Any<CancellationToken>()
+        );
     }
 
     [Fact]
@@ -239,6 +253,12 @@ public class OrdersControllerTests : DatabaseTestBase
         var createdResult = (CreatedAtActionResult)result;
         var response = createdResult.Value as OrderResponse;
         response!.Total.Should().Be(100.0m); // 5 * 20.0
+
+        // Verify event was published
+        await _eventBus.Received(1).PublishAsync(
+            Arg.Is<OrderCreatedEvent>(e => e.Total == 100.0m),
+            Arg.Any<CancellationToken>()
+        );
     }
 
     [Fact]
@@ -264,6 +284,12 @@ public class OrdersControllerTests : DatabaseTestBase
         order.Should().NotBeNull();
         order!.CreatedAt.Should().BeCloseTo(beforeCreate, TimeSpan.FromSeconds(2));
         order.UpdatedAt.Should().BeCloseTo(beforeCreate, TimeSpan.FromSeconds(2));
+
+        // Verify event was published
+        await _eventBus.Received(1).PublishAsync(
+            Arg.Any<OrderCreatedEvent>(),
+            Arg.Any<CancellationToken>()
+        );
     }
 
     [Fact]
@@ -294,6 +320,12 @@ public class OrdersControllerTests : DatabaseTestBase
 
         // Assert
         result.Should().BeOfType<BadRequestObjectResult>();
+
+        // Verify event was NOT published on failure
+        await _eventBus.DidNotReceive().PublishAsync(
+            Arg.Any<OrderCreatedEvent>(),
+            Arg.Any<CancellationToken>()
+        );
     }
 
     [Fact]
@@ -325,6 +357,12 @@ public class OrdersControllerTests : DatabaseTestBase
 
         // Assert
         result.Should().BeOfType<BadRequestObjectResult>();
+
+        // Verify event was NOT published on failure
+        await _eventBus.DidNotReceive().PublishAsync(
+            Arg.Any<OrderCreatedEvent>(),
+            Arg.Any<CancellationToken>()
+        );
     }
 
     [Fact]

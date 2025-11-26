@@ -367,3 +367,4 @@ FodyWeavers.xsd
 
 # Docker environment variables with secrets
 .env
+.claude/settings.local.json

@@ -59,6 +59,30 @@ docker-compose build api
 
 **Note:** Migrations are applied automatically on API startup.
 
+## RabbitMQ Setup (Required for Worker)
+
+The Worker service requires RabbitMQ for message processing. Start RabbitMQ using Docker:
+
+```bash
+# Start RabbitMQ with management UI
+docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+
+# Check RabbitMQ status
+docker ps | grep rabbitmq
+
+# Stop RabbitMQ
+docker stop rabbitmq
+
+# Remove RabbitMQ container
+docker rm rabbitmq
+```
+
+**RabbitMQ URLs:**
+- AMQP port: localhost:5672 (used by API and Worker)
+- Management UI: http://localhost:15672 (user: guest, password: guest)
+
+**Note:** RabbitMQ must be running before starting the Worker service, otherwise the Worker will fail to start.
+
 ## Architecture Overview
 
 This is a modular .NET 8 backend with event-driven processing:
