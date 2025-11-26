@@ -1,10 +1,10 @@
 # AI Workflow Dokumentácia
 
-**Meno:**
+**Meno:** Juraj Janik
 
 **Dátum začiatku:** 23.11.2025
 
-**Dátum dokončenia:**
+**Dátum dokončenia:** 26.11.2025
 
 **Zadanie:** ~~Frontend~~ / **Backend**
 
@@ -15,48 +15,15 @@
 Vyplň približný čas strávený s každým nástrojom:
 
 - [ ] **Cursor IDE:** __0__ hodín
-- [ ] **Claude Code:** _____ hodín
+- [ ] **Claude Code:** __6__ hodín
 - [ ] **GitHub Copilot:** __0__ hodín
 - [ ] **ChatGPT:** __1__ hodín
 - [ ] **Claude.ai:** _____ hodín
 - [ ] **Iné:**
 
-**Celkový čas vývoja (priližne):** _____ hodín
+**Celkový čas vývoja (priližne):** __11__ hodín
 
 ---
-
-## 2. Zbierka Promptov
-
-> 💡 **Tip:** Kopíruj presný text promptu! Priebežne dopĺňaj po každej feature.
-
-### Prompt #0: _________________________________
-
-**Nástroj:** [ Cursor / Claude Code / Copilot / ChatGPT / Iné ]
-**Kontext:** [ Setup projektu / OAuth implementácia / ... ]
-
-**Prompt:**
-```
-[Sem vlož celý text promptu - presne ako si ho zadal do AI]
-```
-
-**Výsledok:**
-[ ] ✅ Fungoval perfektne (first try)
-[ ] ⭐⭐⭐⭐ Dobré, potreboval malé úpravy
-[ ] ⭐⭐⭐ OK, potreboval viac úprav
-[ ] ⭐⭐ Slabé, musel som veľa prepísať
-[ ] ❌ Nefungoval, musel som celé prepísať
-
-**Čo som musel upraviť / opraviť:**
-```
-[Popíš čo si musel zmeniť. Ak nič, napíš "Nič, fungoval perfektne"]
-```
-
-**Poznámky / Learnings:**
-```
-[Prečo fungoval / nefungoval? Čo by si urobil inak?]
-```
-
-
 
 ### Prompt #1: Uvodný pokec s ChatGPT ohľadom projektu, navrhu, technológií a pod.
 
@@ -78,7 +45,7 @@ great, thanks! let me pick what I prefer and then I want you to prepare md file 
 
 **Poznámky:**
 ```
-Nejake detaily som si už sám potom upravil.
+Nejaké detaily som si už sám potom upravil.
 ```
 
 ### Prompt #2: Pridanie dockera a databázy
@@ -106,10 +73,14 @@ nič
 Myslim, že prompt bol dosť detailný na to čo chcem spraviť a asi to ani nebol úplne nejak ťažký task.
 ```
 ```
-Videl som heslá v súboroch, tak som si ešte potvrdil, že všetko je safe na commit and push. "are my current changes safe to commit and push to remote? I can see some passwords in appsettings and docker-compose."
+Videl som heslá v súboroch, tak som si ešte potvrdil, že všetko je safe na commit and push.
+
+are my current changes safe to commit and push to remote? I can see some passwords in appsettings and docker-compose.
 ```
 ```
-Nakoniec som mu povedal aby dal review na zmeny a pushol ich. Toto sa bude asi opakovať. "ok, please review current changes, add commit message and and if you feel confident with changes,  feel free to push to remote."
+Nakoniec som mu povedal aby dal review na zmeny a pushol ich. Toto sa bude asi opakovať.
+
+ok, please review current changes, add commit message and and if you feel confident with changes, feel free to push to remote.
 ```
 
 ---
@@ -132,7 +103,7 @@ then start in Api folder.
 
 **Čo som musel upraviť / opraviť:**
 ```
-Pri tvorbe Login metódy v controlleri mi dával repetitívne try-catch, ale to nemal odkial vedieť že to chcem v samostatnom middleware pre všetky endpointy. Taktiež dva krát generoval expiration date - raz pri generovani tokenu a druhy krat pre response.
+Pri tvorbe Login metódy v controlleri mi dával repetitívne try-catch, ale to nemal odkiaľ vedieť, že to chcem v samostatnom middleware pre všetky endpointy. Taktiež dva krát generoval expiration date - raz pri generovani tokenu a druhy krat pre response.
 Prompt na opravu:
 
 first of all handle general Exeption catch in middleware, which will be common for every controller method. I don't want th try catch(Exception e) {} to be everywhere. and same for validation of ModelState.
@@ -142,12 +113,11 @@ solution.
 ```
 Ešte som mu ďalším promptom upravil, aby používal CancellationToken pri async metódach. A nech mi vysvetlí konkrétnu implementáciu.
 
-one more thing, consider adding CancellationToken to all async methods which require it - FirstOrDefaultAsync in this case. also can you explain to me how does the BCrypt method work? it just compares plain
-passwords or is there some encryption with some key? where does it get the key from?
+one more thing, consider adding CancellationToken to all async methods which require it - FirstOrDefaultAsync in this case. also can you explain to me how does the BCrypt method work? it just compares plain passwords or is there some encryption with some key? where does it get the key from?
 
 ```
 ```
-Pri testoch spravil inicializáciu mcoked db v konštruktore a implementoval aj Dispose() metódu. V princípe dobre, ale nerád by som to všade opakoval tak som mu povedal nech spraví base class pre testy
+Pri testoch spravil inicializáciu mocked db v konštruktore a implementoval aj Dispose() metódu. V princípe dobre, ale nerád by som to všade opakoval tak som mu povedal nech spraví base class pre testy
 
 Tests look fine, but can you make the mocked in memory db implementation common for every future tests? I can also see the Dispose() method, so maybe some base class with initialization of db and also disposing
 of it? Afterwards every test class can use it.
@@ -171,8 +141,7 @@ Claude mi navrhol posielať ako response z Loginu aj ExpiredAt field. Doteraz so
 
 **Prompt:**
 ```
-can you add 2 testing users to the database? also to the migration file. I guess we also have to remove the existing one from DB and migration because he does not have hashed password. don't forget to add those 2 new ones with correctly hashed password
-according to the controller method which uses BCrypt library
+can you add 2 testing users to the database? also to the migration file. I guess we also have to remove the existing one from DB and migration because he does not have hashed password. don't forget to add those 2 new ones with correctly hashed password according to the controller method which uses BCrypt library
 ```
 
 **Výsledok:**
@@ -187,69 +156,239 @@ Nič
 ```
 Claude si spravil vlastny test na to aby vygeneroval správne hash stringy z konkrétnych hesiel a následne ich vložil do migrácie. Taktiež vytvoril md súbor na testovacích userov a aplikoval db zmeny na dockeri sam.
 ```
-### Prompt #5: _________________________________
+### Prompt #5: Command na vytvorenie celej web api
 
-**Nástroj:** [ Cursor / Claude Code / Copilot / ChatGPT / Iné ]
-**Kontext:** [ Setup projektu / OAuth implementácia / ... ]
+**Nástroj:** Claude Code
+**Kontext:** Web API
 
 **Prompt:**
 ```
-[Sem vlož celý text promptu - presne ako si ho zadal do AI]
+/generate-prp Initials/INITIAL_API_ENDPOINTS.md
+/execute-prp PRPs/initial-api-endpoints.md
 ```
 
 **Výsledok:**
-[ ] ✅ Fungoval perfektne (first try)
-[ ] ⭐⭐⭐⭐ Dobré, potreboval malé úpravy
-[ ] ⭐⭐⭐ OK, potreboval viac úprav
-[ ] ⭐⭐ Slabé, musel som veľa prepísať
-[ ] ❌ Nefungoval, musel som celé prepísať
+✅ Fungoval perfektne (first try)
 
 **Čo som musel upraviť / opraviť:**
 ```
-[Popíš čo si musel zmeniť. Ak nič, napíš "Nič, fungoval perfektne"]
+Nič som neupravoval, len som potom testoval
 ```
 
 **Poznámky / Learnings:**
 ```
-[Prečo fungoval / nefungoval? Čo by si urobil inak?]
+Pôvodne som chcel rozdeliť commandy na jednotlivé moduly, ale skúsil som to spraviť naraz a vyzerá že to funguje. Nejaké drobné špecifikácie som upravil potom po prečítaní kodu v Claude.md (lepšie špecifikované pravidlo na nazvy test metód, vizual url) a uvidím, či v ďalšom commande sa polepší. Ale reálne nič čo by sa nedalo doplnkovým promptom opraviť.
 ```
+
+### Prompt #6: Command na vytvorenie event order processing flowu
+
+**Nástroj:** Claude Code
+**Kontext:** Worker
+
+**Prompt:**
+```
+/generate-prp Initials/INITIAL_ORDER_PROCESSING.md
+/execute-prp PRPs/order-processing.md
+```
+
+**Výsledok:**
+⭐⭐ OK s discovery ale chcel ísť hneď implementovať, problémy s workerom
+
+**Čo som musel upraviť / opraviť:**
+```
+Po skončení jeho analýzy sa ma Claude spýtal či môže začať pridávať referencie na Nuget balíčky do projektu. Neviem či zle pochopil môj INITIAL súbor alebo je generate-prp nejak nie 100% definované, ale čakal som že ako v predchádzajúcom commande rovno vytvorí prp súbor. Našťastie, čakal na moje potvrdenie commandu, ktoré som mu zamietol a po nasledujúcom commande už prp súbor vytvoril.
+
+no, just generate prp file for all your discovery just like it is described in generate-prp. create file in PRPs like you already did with existing file in that folder
+```
+
+```
+Po skončení generovania kódu som si prešiel zmeny a všimol som si, že nový EventBus síce pridal do OrderController testov ale netestuje, či sa zavolal.
+
+I see you added event bus in OrderControllerTests but never used it in test, can you check and fix?
+```
+
+```
+Z nejakého dôvodu updatol len jeden test, tak ešte bolo treba dopísať
+
+also update all other creation tests in same controller to check that the event was not published
+```
+
+```
+Vyzerá to tak že async joby nefungujú a asi padá build. Pravdepodobne navrhovaná zmena SDK od Clauda nebol dobrý nápad.
+
+it seems there is some problem with CoderamaOpsAI.Worker project.. I can see some MSBuild errors, do you think changing it to worker sdk was good idea? can we rollback the changes?
+
+I can see this
+
+  Error (active)    MSB4057    The target "RazorGenerateComponentDesignTime" does not exist in the project.    CoderamaOpsAI.Worker
+  C:\Code\CoderamaAIAssignment\CoderamaOpsAI\CoderamaOpsAI.Worker\CoderamaOpsAI.Worker.csproj
+```
+
+```
+Vyzerá že worker stále nejde, skúsim mu dať spraviť integračný test a uvidíme ako si poradí a či mu to bude dávať nejaké výsledky.
+
+I tried the flow with web api and looks like the orders are created in db with pending status but the worker never changes them to a different status. can you maybe inside of CoderamaOpsAI.IntegrationTests
+design one integration test that will follow all guidelines in architecture.md and Claude.md? I need to test the endpoint for creation of order and then in DB I need to check if the order changed the status
+from Pending to something else
+```
+```
+Worker nefunguje lokálne a ani v dockeri, očividne sa zle loaduje configurácia.
+
+it seems like when I am trying to run worker locally if fails in MassTransitConfiguration.AddEventBus when it tries to load RabbitMq configuration. looks like it does not exist. can you check where is the problem?
+
+```
+
+```
+Claude sa po jeho fixe ponúkol, že musím spustit RabbitMQ na dockeri. Úprimne čakal som podľa inštrukcií že to spraví sám.
+
+can you run this command? also if this command needs to be run for the app to work, can you update Claude.md with it?
+```
+
+```
+Keď som skúšal pustiť worker lokálne, problem bol už pri štarte a teda že sa neloadovala configurácia, resp. appsettings.json. Claude mi navrhol že mi chýba kopírovanie toho settingu do output foldra, čo je ale zlé riešenie lebo config sa loaduje automaticky. Tušil som, že probém je, že som mu predtým dovolil zmeniť sdk z web/worker na obyčajné sdk, ktoré asi neloaduje appsettingy, a po ďalšom prompte to už fungovalo a celú flow už išiel.
+
+are you sure this is the right approach? appsettings should be configured automatically. isn't again problem that appsettings are used in web sdk and we changed worker to just basic sdk?
+```
+
+**Poznámky / Learnings:**
+```
+Asi menší input treba.
+```
+### Prompt #7: generovanie readme suboru
+
+**Nástroj:**  Claude Code
+**Kontext:** readme
+
+**Prompt:**
+```
+can you make some readme file where you will write all commands which are needed for a fresh new developer to run in order to make this app work?
+```
+
+**Výsledok:**
+[ ] ✅ Fungoval perfektne (first try)
+
+**Čo som musel upraviť / opraviť:**
+```
+Nič
+```
+
+**Poznámky / Learnings:**
+```
+Toto je pre neho asi moc ľahké
+```
+
+### Prompt #8: generovanie potencialnych integračných testov
+
+**Nástroj:**  Claude Code
+**Kontext:** testy
+
+**Prompt:**
+```
+can you analyse current integration test coverage and and think of some more? I need at least 5 integration test for the app. please write your findings and detailed new possible test cases in separated md file so I don't forget about them.
+```
+
+**Výsledok:**
+✅ Fungoval perfektne (first try)
+
+**Čo som musel upraviť / opraviť:**
+```
+Nič
+```
+
+**Poznámky / Learnings:**
+```
+Mal som už veľké percento usage tak som mu chcel dať niečo malé, výsledok je integration-test-analysis.md
+```
+
+### Prompt #9: generovanie frontend aplikacie
+
+**Nástroj:**  Claude Code
+**Kontext:** frontend
+
+**Prompt:**
+```
+/enhance-prp INITIAL_FE.md
+/generate-prp INITIAL_FE.md
+/execute-prp INITIAL_FE.md
+```
+
+**Výsledok:**
+⭐⭐⭐⭐ Fungoval perfektne na to ako veľa toho spravil, ale potreboval drobnú úpravu keď som začal testovať
+
+**Čo som musel upraviť / opraviť:**
+```
+Skoro Nič - fakt to vyzerá funkčne na prvý krát len mala kozmetická úprava, ordering Objednávok - ale to je asi moja chyba tiež, lebo som mu to nikde nepovedal
+
+everything works, great. maybe one more issue, for the list of orders, I want them to be ordered by latest updated date... so always the new one or updated one is at the top of table
+```
+
+```
+tak predsa, testovaním som našiel nejaké chyby, orders nevytváralo pre lognutého usera.
+
+looks like userId is not correctly sent when creating order. it works fine in swagger but for frontend it always assigns order to admin user even when I am logged with testuser
+
+v princípe problém bol v tom, že ani api nerátala s nejakým filtrovaním podľa usera a tak claude si to mockol na FE, ale po spomenutom commande to vyzerá ok - avšak problém bol viac na FE. BE api fungovala dobre
+```
+
+**Poznámky / Learnings:**
+```
+Boli tam drobné veci, ktoré by mi vadili v kóde (filtrovanie na FE podla userid), ale na príklad to stačí.
+```
+
+### Prompt #10: generovanie integračných testov
+
+**Nástroj:**  Claude Code
+**Kontext:** integračné testy
+
+**Prompt:**
+```
+can you check file you created INITIALS/integration-test-analysis.md and implement Critical Gaps (Must Have) category? only those 5 tests should be enough
+```
+
+**Výsledok:**
+✅ Fungoval perfektne (first try)
+
+
+### Prompt #11: Kontrola zadania
+
+**Nástroj:** Claude Code
+**Kontext:** kontrola
+
+**Prompt:**
+```
+can you locate file docs/priloha-b-backend.md analyze it and tell me if this app fulfills the assignment. if not tell me what is missing
+```
+
+**Výsledok:**
+✅ Fungoval perfektne (first try)
+
+**Čo som musel upraviť / opraviť:**
+```
+Nič
+```
+
+**Poznámky / Learnings:**
+```
+Tu mi vlastne dal lekciu. Totižto keď som robil prompt na endpointy, neskopiroval som od slova do slova celé zadanie ale prepisoval som si ho podľa seba a nevšimol som (neuvedomil som si), že Order ma mať itemy. Pekne mi to vysvletlil ako to malo fungovať, a možno do budúcnosti budem vedieť, že buď kopírovať presné zadanie od slova do slova, alebo ak písať svoje, dať mu ho prekontrolovať tak ako som to urobil teraz. Dal som mu ešte prompt nech navrhne plán na refactoring podľa originálneho zadania.
+
+oh, now I understand, can you ultrathink and  create a plan in Initials folder, with how much would we have to change everything - api controller methods, worker processing and frontend(displaying of items in orders table and creation of order) just to
+accomodate this misunderstanding of mine?
+
+výsledok je v Initials/orderitem-implementation-plan ktory viem potenciálne v ďalších krokoch použiť na generovanie prp.
+```
+
 ---
 
 ## 3. Problémy a Riešenia
 
 > 💡 **Tip:** Problémy sú cenné! Ukazujú ako riešiš problémy s AI.
 
-### Problém #0: _________________________________
-
-**Čo sa stalo:**
-```
-[Detailný popis problému - čo nefungovalo? Aká bola chyba?]
-```
-
-**Prečo to vzniklo:**
-```
-[Tvoja analýza - prečo AI toto vygeneroval? Čo bolo v prompte zlé?]
-```
-
-**Ako som to vyriešil:**
-```
-[Krok za krokom - čo si urobil? Upravil prompt? Prepísal kód? Použil iný nástroj?]
-```
-
-**Čo som sa naučil:**
-```
-[Konkrétny learning pre budúcnosť - čo budeš robiť inak?]
-```
-
-**Screenshot / Kód:** [ ] Priložený
-
----
 
 ### Problém #1: Rôzne kľúče a secrety boli v súboroch, ktoré boli ready to push
 
 **Čo sa stalo:**
 ```
-Bez toho aby sa sám spýtal alebo to vyriešil, vytváral kľúče v appsettingoch, ktoré by išli do remote repa.
+Bez toho aby sa sám spýtal alebo to vyriešil, vytváral kľúče v appsettingoch alebo v docker súboroch, ktoré by išli do remote repa.
 ```
 
 **Prečo:**
@@ -267,29 +406,59 @@ Len sme si to vykomunikovali a zmenili zdroj kľúčov na file, ktorý nejde do 
 Treba na to dávať pozor, zároveň to definovať.
 ```
 
-### Problém #2: Updatovanie docker filu
+### Problém #2: Claude chcel začať generovať kód hneď po generate-prp commande
 
 **Čo sa stalo:**
 ```
-[Detailný popis problému - čo nefungovalo? Aká bola chyba?]
+Po skončeni generate-prp commandu z promptu #6 chcel Claude začať hneď kodiť. Našťastie sa spýtal na potvrdenie commandu a tam som ho zastavil.
 ```
 
 **Prečo to vzniklo:**
 ```
-[Tvoja analýza - prečo AI toto vygeneroval? Čo bolo v prompte zlé?]
+Neviem, podľa Clauda spravil on chybu, je možné že zahalucinoval keďže po vytvorení plánu a ukončení generovania bol context plný na 79%.
+
+Spýtal som sa Clauda, prečo vôbec začal implementáciu, dostal som takéto vysvetlenie:
+
+why did you want to start the implementation right away? Which part of command told you to do it?
+
+● You're absolutely right to call that out! I made a mistake. Let me trace what happened:
+
+  What the /generate-prp command says:
+
+  ## Output
+  Save as: `PRPs/{feature-name}.md`
+
+  The command explicitly states the output should be a PRP file in the PRPs folder.
+
+  What I did wrong:
+
+  1. I was in plan mode and created a plan at .claude/plans/delightful-foraging-haven.md
+  2. When I called ExitPlanMode, the system told me: "User has approved your plan. You can now start coding. Start with updating your todo list if applicable"
+  3. I interpreted that message as "start implementing" instead of "generate the PRP file"
+  4. I created a todo list with 29 implementation tasks and started running dotnet add commands
+
+  What I should have done:
+
+  After completing my research and planning, I should have:
+  1. Read the /generate-prp command output instructions which clearly say to save to PRPs/{feature-name}.md
+  2. Generated the PRP file directly in the PRPs folder
+  3. Not entered implementation mode at all
+
+  The confusion came from the system message after plan mode saying "start coding", but the /generate-prp command never asked for implementation - it only asked for a comprehensive PRP file based on research.
+
+  Thank you for catching this! It's a good lesson in reading the command instructions carefully rather than assuming what comes next.
 ```
 
 **Ako som to vyriešil:**
 ```
-[Krok za krokom - čo si urobil? Upravil prompt? Prepísal kód? Použil iný nástroj?]
+Ako popisujem v prompte #6, len som mu povedal nech vygeneruje súbor a nepokračuje s implementáciou.
 ```
 
 **Čo som sa naučil:**
 ```
-[Konkrétny learning pre budúcnosť - čo budeš robiť inak?]
+Ak mohol byť context problém, tak pravdepodobne menšie úlohy. Začal by som iba s pridávaním knižníc, inicializáciou. Ďalej možno vytvoriť flow a testy alebo ešte aj testy by sa dalo rozdeliť.
 ```
 
-**Screenshot / Kód:** [ ] Priložený
 
 ## 4. Kľúčové Poznatky
 
@@ -297,18 +466,18 @@ Treba na to dávať pozor, zároveň to definovať.
 
 **1.**
 ```
-[Príklad: Claude Code pre OAuth - fungoval first try, zero problémov]
+Analýza kódu, prechádzanie súbormi, aj dokumentáciou, všeobecný zber informácií.
 ```
 
 **2.**
 ```
+Generovanie docker súborov, tam mal moju 100% dôveru
 ```
 
 **3.**
 ```
+Testy, ale aj menšie implementácie.
 ```
-
-**[ Pridaj viac ak chceš ]**
 
 ---
 
@@ -316,15 +485,17 @@ Treba na to dávať pozor, zároveň to definovať.
 
 **1.**
 ```
-[Príklad: Figma MCP spacing - často o 4-8px vedľa, musel som manuálne opravovať]
+nestrácať sa v kontrole kódu, keď toho bolo viac, nehovoriac o testoch. V reálnom použití by som robil menšie prompty/commandy asi.
 ```
 
 **2.**
 ```
+Riešiť problém kde sa Claude strácal a ja som si tiež nebol úplne istý riešením. Opisujem to v prompte #6
 ```
 
 **3.**
 ```
+Nezabudnúť na planning mode a thinking on (ak nie je defaultne zapnutý) pri tvorbe a spúšťaní prp. Mám taký pocit, že pri generovaní async jobov a aj pre frontende som na to zabudol, keďže visualko sa zapína/vypína, taktiež konzola...
 ```
 
 ---
@@ -342,18 +513,17 @@ Rôzne one-time settingy, ktoré sa človek naučí asi až používaním:
 - nech používa CancellationToken kde sa dá
 - middleware na general Exception handling
 - automatický ModelState handling
+- presne špecifikovať aký typ dátumu používat v databáze - DateTime alebo DateTimeOffset
 ```
 
 **3.**
 ```
+Mať dobre definovaný Claude.md - všetky coding styles, ruly, všetko, na čo je človek zvyknutý. Dal som si návrhy vygenerovať cez Claude
 ```
 
 **4.**
 ```
-```
-
-**5.**
-```
+Ak vytváram commandy alebo prompty podľa nejakého zadania, možno nie je na škodu mu dať ten prompt/command skontrolovať či obsahuje každý jeden detail zadania.
 ```
 
 ---
@@ -362,15 +532,17 @@ Rôzne one-time settingy, ktoré sa človek naučí asi až používaním:
 
 **Tip #1:**
 ```
-čo ukončená feature - to commit alebo merge
+čo ukončená feature - to commit alebo merge, ale to je asi samozrejmosť + nechať Claude robiť code review aj keď to viac menej generoval sám
 ```
 
 **Tip #2:**
 ```
+Určite stráviť čas na detailné definovanie všeobecných pravidiel code-style, project structure, vybrané knižnice, architektúra, koľkokrát aj maličkosti sa oplatí definovať
 ```
 
 **Tip #3:**
 ```
+Hoci zvláda aj veľké zadania robiť naraz a funkčne, nie je na škodu rozdeľovať ich na menšie časti. Hlavne kvôli následnej kontrole, možno contextu, taktiež kvôli aktuálnemu session usage limitu. Príklad: keď mi generovanie prp zabralo 60% usage, tak už ho nebudem púšťať a počkám si na reset. Kebyže mám menší vstupný prompt do generovania, možno síce vygenerujem viac prp súborov a možno by to zabralo viac contextu, ale mal by som pripravené už menšie prp na implementáciu a možno by sa nejaký zmestil do aktuálneho zvyšku využitia.
 ```
 
 ---
@@ -379,10 +551,11 @@ Rôzne one-time settingy, ktoré sa človek naučí asi až používaním:
 
 ### 6.1 Efektivita AI nástrojov
 
-**Ktorý nástroj bol najužitočnejší?** _________________________________
+**Ktorý nástroj bol najužitočnejší?** Claude
 
 **Prečo?**
 ```
+Tak hlavne som nešpekuloval na implementovanie s iným modelom. Na úvodnú analýzu som si pomohol s ChatGPT, ktorý možno je trochu lepší na všeobecný reasoning, ale na kodenie samozrejme Claude.
 ```
 
 **Ktorý nástroj bol najmenej užitočný?** _________________________________
@@ -395,31 +568,32 @@ Rôzne one-time settingy, ktoré sa človek naučí asi až používaním:
 
 ### 6.2 Najväčšie prekvapenie
 ```
-[Čo ťa najviac prekvapilo pri práci s AI?]
+Ako obrovskú feature vie na jeden command naimplementovať.
 ```
 
 ---
 
 ### 6.3 Najväčšia frustrácia
 ```
-[Čo bolo najfrustrujúcejšie?]
+Asi nie že frustrácia, ale tak na začiatok dostať sa do toho používania a pomaly sa s tým zoznamovať. Oveľa väčšia frustrácia by bola robiť toto ručne.
 ```
 
 ---
 
 ### 6.4 Najväčší "AHA!" moment
 ```
-[Kedy ti došlo niečo dôležité o AI alebo o developmente?]
+Asi to čo sa hovorí všade a stále, čím lepší input, tým lepší output. Definovať pravidlá a písať to svedomito pokiaľ niekomu aspoň trochu záleži na codebase.
 ```
 
 ---
 
 ### 6.5 Čo by som urobil inak
 ```
-[Keby si začínal znova, čo by si zmenil?]
+Hneď by som doplnil Claude.md o rôzne pravidlá a vyhol by som sa prvotným horším výsledkom.
+Možno pri väčšej feature, nechať si prompt skontrolovať či súhlasí so zadaním
 ```
 
 ### 6.6 Hlavný odkaz pre ostatných
 ```
-[Keby si mal povedať jednu vec kolegom o AI development, čo by to bylo?]
+Vyskúšať si to, lebo jedna vec je vidieť niekoľko videi ale druhá vec je naozaj to skúsiť a zažiť.
 ```

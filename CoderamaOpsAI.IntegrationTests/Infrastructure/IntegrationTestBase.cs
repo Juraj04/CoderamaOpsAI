@@ -1,4 +1,11 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Text;
+using CoderamaOpsAI.Api.Models;
 using CoderamaOpsAI.Common.Configuration;
+using CoderamaOpsAI.Common.Interfaces;
 using CoderamaOpsAI.Dal;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -6,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
 
@@ -146,5 +154,72 @@ public class IntegrationTestBase : IAsyncLifetime
     {
         var scope = _apiFactory!.Services.CreateScope();
         return scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    }
+
+    /// <summary>
+    /// Authenticates a user and returns a JWT token
+    /// </summary>
+    protected async Task<string> GetAuthTokenAsync(string email, string password)
+    {
+        var loginRequest = new LoginRequest
+        {
+            Email = email,
+            Password = password
+        };
+
+        var loginResponse = await ApiClient.PostAsJsonAsync("/api/auth/login", loginRequest);
+        loginResponse.EnsureSuccessStatusCode();
+
+        var loginResult = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
+        return loginResult!.Token;
+    }
+
+    /// <summary>
+    /// Sets the authorization header on ApiClient with the provided token
+    /// </summary>
+    protected void SetAuthorizationHeader(string token)
+    {
+        ApiClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+    }
+
+    /// <summary>
+    /// Gets IEventBus for manually publishing events in tests
+    /// </summary>
+    protected IEventBus GetEventBus()
+    {
+        var scope = _apiFactory!.Services.CreateScope();
+        return scope.ServiceProvider.GetRequiredService<IEventBus>();
+    }
+
+    /// <summary>
+    /// Creates an expired JWT token for testing authorization
+    /// Returns a token that expired 1 hour ago
+    /// </summary>
+    protected string CreateExpiredJwtToken()
+    {
+        var key = "ThisIsATestSecretKeyForIntegrationTestsOnly123456789";
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, "999"),
+            new Claim(JwtRegisteredClaimNames.Email, "expired@example.com"),
+            new Claim(JwtRegisteredClaimNames.Name, "Expired User"),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        var expiredTime = DateTime.UtcNow.AddHours(-1); // Expired 1 hour ago
+
+        var token = new JwtSecurityToken(
+            issuer: "CoderamaOpsAI-Test",
+            audience: "CoderamaOpsAI-Test",
+            claims: claims,
+            expires: expiredTime,
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
